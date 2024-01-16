@@ -10,7 +10,7 @@ pygame.display.set_caption("Название Игры")
 
 player = Player(PLAYER_START_X, PLAYER_START_Y)
 platforms = [Platform(100, 500, 200, 20)]
-platform = platforms[0] # Начальная платформа
+platform = platforms[0]  # Начальная платформа
 clock = pygame.time.Clock()
 
 while True:
