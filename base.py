@@ -1,8 +1,9 @@
 import pygame
 from pygame.rect import Rect
 from pygame.surface import Surface
-
 from pygame.key import ScancodeWrapper
+
+from config import PLAYER_SPEED, PLAYER_JUMP_POWER
 
 
 class Platform(pygame.sprite.Sprite):
@@ -30,7 +31,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load("sprites/player.png")
         self.rect: Rect = self.image.get_rect()
         self.rect.topleft = (x, y)
-        self.speed: int = 5
+        self.speed: int = PLAYER_SPEED
         self.y_speed: int = 0
         self.is_jumping: bool = False
 
@@ -70,5 +71,5 @@ class Player(pygame.sprite.Sprite):
         Выполняет прыжок, если игрок не находится в процессе прыжка.
         """
         if not self.is_jumping:
-            self.y_speed = -15
+            self.y_speed = PLAYER_JUMP_POWER
             self.is_jumping = True

@@ -1,19 +1,16 @@
 import pygame
 import sys
-
+from config import WIDTH, HEIGHT, PLAYER_START_X, PLAYER_START_Y, FPS
 from base import Player, Platform
 
 pygame.init()
 
-WIDTH, HEIGHT = 800, 600
-FPS = 60
-
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Metroidvania Game")
+pygame.display.set_caption("Название Игры")
 
-player = Player(100, 100)
-platform = Platform(100, 500, 200, 20)
-
+player = Player(PLAYER_START_X, PLAYER_START_Y)
+platforms = [Platform(100, 500, 200, 20)]
+platform = platforms[0] # Начальная платформа
 clock = pygame.time.Clock()
 
 while True:
