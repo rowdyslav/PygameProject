@@ -1,9 +1,8 @@
 import pygame
 from pygame.rect import Rect
 from pygame.surface import Surface
-from pygame.key import ScancodeWrapper
 
-from config import PLAYER_SPEED, PLAYER_JUMP_POWER
+from config.player import SPEED, JUMP_SPEED
 
 
 class Platform(pygame.sprite.Sprite):
@@ -28,32 +27,46 @@ class Player(pygame.sprite.Sprite):
         :param y: Координата Y начальной позиции игрока.
         """
         super().__init__()
+
+        self.status: str = 'idle'
+        self.on_ground = False
+        self.direction = pygame.math.Vector2(0, 0)
+        self.facing_right: bool | None = None
+        self.gravity = 1
+
         self.image = pygame.image.load("sprites/player.png")
         self.rect: Rect = self.image.get_rect()
         self.rect.topleft = (x, y)
-        self.speed: int = PLAYER_SPEED
-        self.y_speed: int = 0
-        self.is_jumping: bool = False
 
-    def move(self, keys: ScancodeWrapper) -> None:
+        self.speed: int = SPEED
+        self.jump_speed: int = JUMP_SPEED
+
+        self.hitbox = pygame.Rect(self.rect.topleft, (50, self.rect.height))
+
+    def get_input(self) -> None:
         """
-        Обрабатывает движение игрока влево и вправо.
-
-        :param keys: Список кодов клавиш, представляющих текущее состояние клавиш.
+        Обрабатывает кнопки
         """
-        if keys[pygame.K_a]:
-            self.rect.x -= self.speed
-        if keys[pygame.K_d]:
-            self.rect.x += self.speed
+        keys = pygame.key.get_pressed()
 
-    def apply_gravity(self, gravity: int) -> None:
+        if keys[pygame.K_RIGHT]:
+            self.direction.x = 1
+            self.facing_right = True
+        elif keys[pygame.K_LEFT]:
+            self.direction.x = -1
+            self.facing_right = False
+        else:
+            self.direction.x = 0
+
+        if keys[pygame.K_SPACE] and self.on_ground:
+            self.jump()
+
+    def apply_gravity(self) -> None:
         """
         Применяет гравитацию к вертикальной скорости игрока.
-
-        :param gravity: Значение гравитации, влияющей на скорость игрока.
         """
-        self.y_speed += gravity
-        self.rect.y += self.y_speed
+        self.direction.y += self.gravity
+        self.hitbox.y += self.direction.y
 
     def check_platform_collision(self, platform: Platform) -> None:
         """
@@ -61,15 +74,31 @@ class Player(pygame.sprite.Sprite):
 
         :param platform: Объект платформы для проверки столкновения.
         """
-        if self.rect.colliderect(platform.rect) and self.y_speed > 0:
-            self.y_speed = 0
+        if self.rect.colliderect(platform.rect) and self.jump_speed > 0:
+            self.jump_speed = 0
             self.rect.y = platform.rect.y - self.rect.height
-            self.is_jumping = False
+            self.on_ground = True
 
     def jump(self) -> None:
         """
         Выполняет прыжок, если игрок не находится в процессе прыжка.
         """
-        if not self.is_jumping:
-            self.y_speed = PLAYER_JUMP_POWER
-            self.is_jumping = True
+        if self.on_ground:
+            self.direction.y = self.jump_speed
+
+    def get_status(self):
+        if self.direction.y < 0:
+            self.status = "jump"
+        elif self.direction.y > 1:
+            self.status = "fall"
+        else:
+            if self.direction.x != 0:
+                self.status = "run"
+            else:
+                self.status = "idle"
+
+    def update(self, *args, **kwargs):
+        self.get_input()
+        self.get_status()
+
+
