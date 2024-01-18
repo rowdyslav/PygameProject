@@ -8,9 +8,12 @@ from config.window import WIDTH, HEIGHT
 class Game:
     def __init__(self):
         self.player = Player(200, 50)
-        self.platforms = [Platform(0, WIDTH - 20, HEIGHT, 20),
-                          Platform(200, 400, 150, 20),
-                          Platform(400, 300, 150, 20)]
+        self.platforms = [
+            Platform(200, 400, 150, 20),
+            Platform(200, 500, 150, 20),
+            Platform(400, 300, 150, 20),
+            Platform(400, 100, 150, 20),
+        ]
 
     def update(self):
         self.player.update(self.platforms)

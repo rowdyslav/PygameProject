@@ -11,9 +11,9 @@ class Platform:
         pygame.draw.rect(screen, (0, 255, 0), self.rect)
 
 
-class Player:
+class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
-        self.image = pygame.image.load('sprites/graphics/player.png')
+        self.image = pygame.image.load("sprites/graphics/player.png")
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = self.start_position = x, y
         self.velocity = 0
@@ -21,18 +21,19 @@ class Player:
         self.jump_power = -15
         self.on_ground = False
 
-    def update(self, platforms):
+    def update(self, platforms: list[Platform]):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_a]:
             self.rect.x -= 5
         if keys[pygame.K_d]:
             self.rect.x += 5
-
         self.apply_gravity()
 
         if keys[pygame.K_SPACE] and self.on_ground:
             self.jump()
+        if keys[pygame.K_s] and self.on_ground:
+            self.drop_down()
 
         self.check_collision(platforms)
         self.check_alive()
@@ -47,6 +48,9 @@ class Player:
 
     def jump(self):
         self.velocity = self.jump_power
+
+    def drop_down(self):
+        self.rect.y += self.rect.height + 20
 
     def check_collision(self, platforms):
         self.on_ground = False
