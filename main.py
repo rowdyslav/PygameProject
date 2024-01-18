@@ -2,27 +2,45 @@ import pygame
 import sys
 
 from base import Player, Platform
+from config.window import WIDTH, HEIGHT
 
-from config.window import WIDTH, HEIGHT, FPS
-from config.player import START_X, START_Y
 
-pygame.init()
+class Game:
+    def __init__(self):
+        self.player = Player(200, 50)
+        self.platforms = [Platform(0, WIDTH - 20, HEIGHT, 20),
+                          Platform(200, 400, 150, 20),
+                          Platform(400, 300, 150, 20)]
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Название Игры")
+    def update(self):
+        self.player.update(self.platforms)
 
-player = Player(START_X, START_Y)
-platforms = [Platform(100, 500, 200, 20)]
-start_platform = platforms[0]
-clock = pygame.time.Clock()
+    def draw(self):
+        screen.fill((255, 255, 255))
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+        for platform in self.platforms:
+            platform.draw(screen)
 
-    screen.fill('grey')
+        self.player.draw(screen)
 
-    pygame.display.update()
-    clock.tick(FPS)
+        pygame.display.flip()
+
+
+if __name__ == "__main__":
+    pygame.init()
+
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Simple Platformer")
+    clock = pygame.time.Clock()
+
+    game = Game()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        game.update()
+        game.draw()
+        clock.tick(60)
